@@ -14,8 +14,10 @@ from bs4 import BeautifulSoup
 
 from email.Header import Header
 import next_page
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
+
 
 class GetContent():
     def __init__(self, id):
@@ -36,7 +38,7 @@ class GetContent():
 
     def getAnswer(self, answerID):
         host = "http://www.zhihu.com"
-        url = host + '/question/'+answerID
+        url = host + '/question/' + answerID
         print url
         user_agent = "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)"
         # 构造header 伪装一下
@@ -44,8 +46,8 @@ class GetContent():
         req = urllib2.Request(url, headers=header)
 
         try:
-            resp = urllib2.urlopen(req,timeout=20)
-            content= resp.read()
+            resp = urllib2.urlopen(req, timeout=20)
+            content = resp.read()
             if content is None:
                 print "Empty"
                 return False
@@ -53,7 +55,7 @@ class GetContent():
             print "Time out. Retry"
             time.sleep(30)
             # try to switch with proxy ip
-            resp = urllib2.urlopen(req,timeout=20)
+            resp = urllib2.urlopen(req, timeout=20)
             content = resp.read()
             if content is None:
                 print "Empty"
@@ -65,7 +67,7 @@ class GetContent():
         except:
             print "Beautifulsoup error"
             return False
-        #print content
+        # print content
         title = bs.title
         # 获取的标题
         print title
@@ -82,9 +84,8 @@ class GetContent():
 
         self.save2file(filename, title.string)
 
-
         detail = bs.find("div", class_="zm-editable-content")
-        self.save2file(filename, "\n\n\n\n--------------------Link %s ----------------------\n\n"  %url)
+        self.save2file(filename, "\n\n\n\n--------------------Link %s ----------------------\n\n" % url)
         self.save2file(filename, "\n\n\n\n--------------------Detail----------------------\n\n")
         # 获取问题的补充内容
 
@@ -114,20 +115,19 @@ class GetContent():
             index = index + 1
 
         '''
-        #点击更多按钮的bug
-        #构造header
-        new_answer=next_page.getAll_Answer(answerID)
+        # 点击更多按钮的bug
+        # 构造header
+        new_answer = next_page.getAll_Answer(answerID)
         k = 0
         index = 0
         print new_answer
         if new_answer is None:
             return 0
-        for each_answer in new_answer :
+        for each_answer in new_answer:
             self.save2file(filename, "\n\n-------------------------answer %d  -------------------------\n" % k)
-            sub_answer=re.sub('<br>|</br>|<p>|</p>','\n', each_answer)
+            sub_answer = re.sub('<br>|</br>|<p>|</p>', '\n', each_answer)
             self.save2file(filename, unicode(sub_answer))
-            k=k+1
-
+            k = k + 1
 
         smtp_server = 'smtp.126.com'
         from_mail = 'your@126.com'
@@ -139,7 +139,6 @@ class GetContent():
 
         # 调用发送邮件函数，把电子书发送到你的kindle用户的邮箱账号，这样你的kindle就可以收到电子书啦
         print filename
-
 
 
 class MailAtt():
@@ -175,8 +174,9 @@ class MailAtt():
         self.smtp.sendmail(self.msg['from'], self.msg['to'], self.msg.as_string())
         self.smtp.quit()
 
-#Todo
-#add id list to database
+
+# Todo
+# add id list to database
 
 if __name__ == "__main__":
 
@@ -188,8 +188,8 @@ if __name__ == "__main__":
 
     os.chdir(sub_folder)
 
-    id="20357585"
-    #id = sys.argv[1]
+    id = "20357585"
+    # id = sys.argv[1]
     # 给出的第一个参数 就是你要下载的问题的id
     # 比如 想要下载的问题链接是 https://www.zhihu.com/question/29372574
     # 那么 就输入 python zhihu.py 29372574

@@ -35,15 +35,15 @@ except:
     print "Cookie can't load"
 
 
-#读取文件
+# 读取文件
 def getUserData(configFile):
     f = open(configFile, 'r')
 
-    #for i in f.readlines():
-    data=f.readlines()
-    username=data[0].strip()
-    pwd=data[1].strip()
-    return username,pwd
+    # for i in f.readlines():
+    data = f.readlines()
+    username = data[0].strip()
+    pwd = data[1].strip()
+    return username, pwd
 
 
 def isLogin():
@@ -66,7 +66,7 @@ def get_xsrf():
 
 
 def getCaptcha():
-    #r=1471341285051
+    # r=1471341285051
     r = (time.time() * 1000)
     url = 'http://www.zhihu.com/captcha.gif?r=' + str(r) + '&type=login'
 
@@ -77,7 +77,7 @@ def getCaptcha():
 
 
 def Login():
-    username,pwd=getUserData("data.cfg")
+    username, pwd = getUserData("data.cfg")
     xsrf = get_xsrf()
     print xsrf
     print len(xsrf)
@@ -94,13 +94,13 @@ def Login():
         d = json.loads(login_code)
         print d['msg']
         print content.status_code
-        #this line important ! if no status, if will fail and execute the except part
-        #print content.status
+        # this line important ! if no status, if will fail and execute the except part
+        # print content.status
 
         if content.status_code != requests.codes.ok:
             print "Need to verification code !"
             getCaptcha()
-            #print "Please input the code of the captcha"
+            # print "Please input the code of the captcha"
             code = raw_input("Please input the code of the captcha")
             data['captcha'] = code
             content = session.post(login_url, data=data, headers=headers)
@@ -109,7 +109,7 @@ def Login():
             if content.status_code == requests.codes.ok:
                 print "Login successful"
                 session.cookies.save()
-                #print login_code
+                # print login_code
         else:
             session.cookies.save()
             return True
@@ -138,8 +138,8 @@ def focus_question():
     end_page = 500
     xsrf = re.findall(r'<input type=\"hidden\" name=\"_xsrf\" value=\"(\w+)\"', content.text)[0]
     while offset < end_page:
-        #para='{"offset":20}'
-        #print para
+        # para='{"offset":20}'
+        # print para
         print "page: %d" % offset
         params = {"offset": offset}
         params_json = json.dumps(params)
@@ -149,7 +149,7 @@ def focus_question():
             'params': params_json,
             '_xsrf': xsrf
         }
-        #注意上面那里 post的data需要一个xsrf的字段，不然会返回403 的错误，这个在抓包的过程中一直都没有看到提交到xsrf，所以自己摸索出来的
+        # 注意上面那里 post的data需要一个xsrf的字段，不然会返回403 的错误，这个在抓包的过程中一直都没有看到提交到xsrf，所以自己摸索出来的
         offset = offset + page
         headers_l = {
             'Host': 'www.zhihu.com',
@@ -160,8 +160,8 @@ def focus_question():
         }
         try:
             s = session.post(url_next, data=data, headers=headers_l)
-            #print s.status_code
-            #print s.text
+            # print s.status_code
+            # print s.text
             msgs = json.loads(s.text)
             msg = msgs['msg']
             for i in msg:
@@ -174,7 +174,6 @@ def focus_question():
         except:
             print "Getting Error "
 
-
     return id_list
 
 
@@ -183,20 +182,20 @@ def main():
         print "Has login"
     else:
         print "Need to login"
-        r=Login()
+        r = Login()
         if not r:
             "Login failed. Exit !"
             exit()
 
     list_id = focus_question()
     sub_folder = os.path.join(os.getcwd(), "content")
-    #专门用于存放下载的电子书的目录
+    # 专门用于存放下载的电子书的目录
 
     if not os.path.exists(sub_folder):
         os.mkdir(sub_folder)
 
     os.chdir(sub_folder)
-    #把list保存起来
+    # 把list保存起来
     old_list = []
     if not os.path.exists("list.txt"):
         print "list.txt not existed"
@@ -215,9 +214,8 @@ def main():
 
     fail_file = open("failed_list.txt", 'w')
 
-
     for i in new_list:
-        #print i
+        # print i
 
         obj = GetContent(i.strip())
         if obj == False:
@@ -227,8 +225,7 @@ def main():
     new_fp = open("list.txt", 'w')
     new_fp.write(sep.join(new_list))
     new_fp.close()
-    #getCaptcha()
-
+    # getCaptcha()
 
 
 if __name__ == '__main__':
